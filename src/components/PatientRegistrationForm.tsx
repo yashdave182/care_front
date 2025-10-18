@@ -80,6 +80,7 @@ const PatientRegistrationForm = ({ nurses, doctors, beds, onRegister }: PatientR
       const availableDoctors = doctors.filter(d => d.status === 'available');
       const availableBeds = beds.filter(b => b.status === 'available');
       
+      // This will now always call the Gemini API directly
       const assignment = await AIAssignmentService.assignPatientToStaff(
         patientData,
         availableNurses.length > 0 ? availableNurses : nurses,
@@ -112,7 +113,7 @@ const PatientRegistrationForm = ({ nurses, doctors, beds, onRegister }: PatientR
       setPhone('');
     } catch (error) {
       console.error('Error registering patient:', error);
-      toast.error('Failed to register patient. Please try again.', { id: 'patient-registration' });
+      toast.error(`Failed to register patient: ${error.message}`, { id: 'patient-registration' });
     } finally {
       setIsSubmitting(false);
     }

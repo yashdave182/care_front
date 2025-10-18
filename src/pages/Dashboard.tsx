@@ -139,7 +139,7 @@ const Dashboard = () => {
       const availableDoctors = doctors.filter(d => d.status === 'available');
       const availableBeds = beds.filter(b => b.status === 'available');
       
-      // Get AI-powered assignments
+      // Get AI-powered assignments - this will now always call the Gemini API directly
       const assignment = await AIAssignmentService.assignPatientToStaff(
         data,
         availableNurses.length > 0 ? availableNurses : nurses,
@@ -171,7 +171,7 @@ const Dashboard = () => {
       return newPatient;
     } catch (error) {
       console.error('Error in patient assignment:', error);
-      toast.error('Failed to add new patient. Please try again.', { id: 'patient-assignment' });
+      toast.error(`Failed to add new patient: ${error.message}`, { id: 'patient-assignment' });
       throw error;
     }
   };

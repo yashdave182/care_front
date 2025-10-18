@@ -24,15 +24,16 @@ export class AIAssignmentService {
     availableDoctors: Doctor[],
     availableBeds: Bed[]
   ): Promise<AssignmentResult> {
-    try {
-      // If no API key is provided, use fallback logic
-      const apiKey = import.meta.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        console.warn('Gemini API key not found, using fallback assignment logic');
-        return this.fallbackAssignment(patientData, availableNurses, availableDoctors, availableBeds);
-      }
+    // Always use the Gemini API directly - no fallback logic
+    const apiKey = import.meta.env.GEMINI_API_KEY;
+    
+    // If no API key is provided, throw an error instead of using fallback
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is required for AI-powered assignments. Please configure your environment variables.');
+    }
 
-      // Get AI recommendations
+    try {
+      // Get AI recommendations directly from Gemini API
       const recommendations = await getAIAssignmentRecommendations(
         patientData,
         availableNurses,
@@ -52,68 +53,28 @@ export class AIAssignmentService {
         reasoning: recommendations.reasoning
       };
     } catch (error) {
-      console.error('AI assignment failed, using fallback logic:', error);
-      return this.fallbackAssignment(patientData, availableNurses, availableDoctors, availableBeds);
+      // Re-throw the error instead of using fallback logic
+      console.error('AI assignment failed:', error);
+      throw new Error(`Failed to get AI recommendations from Gemini API: ${error.message}`);
     }
-  }
-
-  private static fallbackAssignment(
-    patientData: PatientData,
-    availableNurses: Nurse[],
-    availableDoctors: Doctor[],
-    availableBeds: Bed[]
-  ): AssignmentResult {
-    // Simple fallback logic based on specialty matching
-    let assignedNurse: Nurse | null = null;
-    let assignedDoctor: Doctor | null = null;
-    let assignedBed: Bed | null = null;
-
-    // Find nurse with matching specialization or first available
-    if (patientData.specialty_required) {
-      assignedNurse = availableNurses.find(n => 
-        n.specialization.toLowerCase().includes(patientData.specialty_required.toLowerCase()) && 
-        n.status === 'available'
-      ) || null;
-    }
-    
-    if (!assignedNurse) {
-      assignedNurse = availableNurses.find(n => n.status === 'available') || 
-                     (availableNurses.length > 0 ? availableNurses[0] : null);
-    }
-
-    // Find doctor with matching specialization or first available
-    if (patientData.specialty_required) {
-      assignedDoctor = availableDoctors.find(d => 
-        d.specialization.toLowerCase().includes(patientData.specialty_required.toLowerCase()) && 
-        d.status === 'available'
-      ) || null;
-    }
-    
-    if (!assignedDoctor) {
-      assignedDoctor = availableDoctors.find(d => d.status === 'available') || 
-                      (availableDoctors.length > 0 ? availableDoctors[0] : null);
-    }
-
-    // Find first available bed
-    assignedBed = availableBeds.find(b => b.status === 'available') || 
-                 (availableBeds.length > 0 ? availableBeds[0] : null);
-
-    return {
-      nurse: assignedNurse,
-      doctor: assignedDoctor,
-      bed: assignedBed,
-      reasoning: 'Assigned using fallback logic based on availability and specialization matching'
-    };
   }
 
   static async getPatientUrgencyAnalysis(condition: string, age: string, notes: string) {
-    // This would integrate with the Gemini API for patient condition analysis
-    // For now, we'll return a mock response
-    return {
-      urgency_level: "Medium",
-      treatment_approach: "Standard assessment and monitoring",
-      time_sensitivity: "30-60 minutes"
-    };
+    const apiKey = import.meta.env.GEMINI_API_KEY;
+    
+    // If no API key is provided, throw an error instead of using fallback
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is required for AI-powered patient analysis. Please configure your environment variables.');
+    }
+
+    try {
+      // Integrate with the Gemini API for patient condition analysis
+      // This would be implemented similar to getAIAssignmentRecommendations
+      throw new Error('Patient urgency analysis not yet implemented. Please implement the Gemini API integration.');
+    } catch (error) {
+      console.error('AI patient analysis failed:', error);
+      throw new Error(`Failed to analyze patient condition with Gemini API: ${error.message}`);
+    }
   }
 }
 
