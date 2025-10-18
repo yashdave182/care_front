@@ -105,31 +105,31 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* User Type Selection */}
-          <div className="flex gap-2 mb-6">
+          {/* User Type Selection - Responsive for mobile */}
+          <div className="flex flex-col sm:flex-row gap-2 mb-6">
             <Button
               variant={userType === 'admin' ? 'default' : 'outline'}
-              className={`flex-1 ${userType === 'admin' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
+              className={`w-full sm:flex-1 ${userType === 'admin' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
               onClick={() => setUserType('admin')}
             >
               <Shield className="w-4 h-4 mr-2" />
-              Admin
+              <span className="truncate">Admin</span>
             </Button>
             <Button
               variant={userType === 'nurse' ? 'default' : 'outline'}
-              className={`flex-1 ${userType === 'nurse' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
+              className={`w-full sm:flex-1 ${userType === 'nurse' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
               onClick={() => setUserType('nurse')}
             >
               <User className="w-4 h-4 mr-2" />
-              Nurse
+              <span className="truncate">Nurse</span>
             </Button>
             <Button
               variant={userType === 'doctor' ? 'default' : 'outline'}
-              className={`flex-1 ${userType === 'doctor' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
+              className={`w-full sm:flex-1 ${userType === 'doctor' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
               onClick={() => setUserType('doctor')}
             >
               <Stethoscope className="w-4 h-4 mr-2" />
-              Doctor
+              <span className="truncate">Doctor</span>
             </Button>
           </div>
 
@@ -163,6 +163,7 @@ const Login = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -171,7 +172,7 @@ const Login = () => {
 
             <div className="p-4 bg-secondary rounded-lg border border-border">
               <p className="text-sm font-medium mb-2">Demo Credentials:</p>
-              <p className="text-sm text-muted-foreground">Email: {demoCredentials.email}</p>
+              <p className="text-sm text-muted-foreground break-words">Email: {demoCredentials.email}</p>
               <p className="text-sm text-muted-foreground">Password: {demoCredentials.password}</p>
             </div>
 

@@ -211,9 +211,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header - Responsive for mobile */}
       <header className="border-b border-border bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Building2 className="w-5 h-5 text-primary-foreground" />
@@ -224,18 +224,19 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Admin</span>
+            <span className="text-sm text-muted-foreground hidden sm:block">Admin</span>
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              <LogOut className="w-4 h-4 mr-2 sm:mr-0 sm:hidden" />
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Status Overview */}
+      {/* Status Overview - Responsive grid */}
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -301,21 +302,21 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Responsive layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel */}
+          {/* Left Panel - Full width on mobile, sidebar on larger screens */}
           <div className="space-y-6">
             <EmergencyTrigger onTrigger={handleTriggerEmergency} />
             <ActiveEmergencies emergencies={emergencies} onResolve={handleResolveEmergency} />
           </div>
 
-          {/* Right Panel */}
+          {/* Right Panel - Full width on mobile, main content on larger screens */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="shadow-[var(--shadow-elegant)]">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <CardTitle>3D Bed Map</CardTitle>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {Array.from({ length: hospital?.floors || 3 }, (_, i) => i + 1).map((floor) => (
                       <Button
                         key={floor}
@@ -331,14 +332,14 @@ const Dashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-[400px] rounded-lg overflow-hidden bg-secondary/30">
+                <div className="h-[300px] sm:h-[400px] rounded-lg overflow-hidden bg-secondary/30">
                   <BedMap3D
                     beds={beds}
                     selectedFloor={selectedFloor}
                     onSelectBed={setSelectedBed}
                   />
                 </div>
-                <div className="grid grid-cols-4 gap-4 mt-4 text-sm">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-success" />
                     <span>Available</span>
@@ -359,16 +360,16 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Resource Tabs */}
+            {/* Resource Tabs - Responsive tabs */}
             <Card className="shadow-[var(--shadow-elegant)]">
               <CardContent className="pt-6">
                 <Tabs defaultValue="nurses">
-                  <TabsList className="grid w-full grid-cols-6">
+                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
                     <TabsTrigger value="nurses">👩‍⚕️ Nurses</TabsTrigger>
                     <TabsTrigger value="beds">🏥 Beds</TabsTrigger>
                     <TabsTrigger value="doctors">👨‍⚕️ Doctors</TabsTrigger>
                     <TabsTrigger value="analytics">📊 Analytics</TabsTrigger>
-                    <TabsTrigger value="register-patient">📋 Register Patient</TabsTrigger>
+                    <TabsTrigger value="register-patient">📋 Register</TabsTrigger>
                     <TabsTrigger value="new-patient">🆕 New Patient</TabsTrigger>
                   </TabsList>
 
@@ -490,7 +491,7 @@ const Dashboard = () => {
 
                   <TabsContent value="analytics" className="mt-4">
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Card className="bg-secondary/50">
                           <CardContent className="pt-6">
                             <p className="text-sm text-muted-foreground">Bed Occupancy Rate</p>

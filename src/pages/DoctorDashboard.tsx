@@ -66,9 +66,9 @@ const DoctorDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header - Responsive for mobile */}
       <header className="border-b border-border bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Building2 className="w-5 h-5 text-primary-foreground" />
@@ -81,21 +81,22 @@ const DoctorDashboard = () => {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium truncate max-w-[150px]">
                 {currentDoctor ? `${currentDoctor.name} (${currentDoctor.doctor_id})` : 'Doctor'}
               </span>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              <LogOut className="w-4 h-4 mr-2 sm:mr-0 sm:hidden" />
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - Responsive layout */}
       <div className="container mx-auto px-4 py-6">
-        {/* Welcome Card */}
+        {/* Welcome Card - Responsive for mobile */}
         <Card className="mb-6 shadow-[var(--shadow-elegant)]">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -113,9 +114,9 @@ const DoctorDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Assignments */}
+        {/* Assignments - Responsive grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Active Assignments */}
+          {/* Active Assignments - Full width on mobile */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="shadow-[var(--shadow-elegant)]">
               <CardHeader>
@@ -138,7 +139,7 @@ const DoctorDashboard = () => {
                     {doctorAssignments.map((assignment) => (
                       <Card key={assignment.id} className="border border-border">
                         <CardContent className="pt-4">
-                          <div className="flex justify-between items-start">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                               <h3 className="font-bold text-lg">{assignment.patient_name}</h3>
                               <p className="text-muted-foreground text-sm">{assignment.type}</p>
@@ -152,8 +153,8 @@ const DoctorDashboard = () => {
                           </div>
                           
                           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-muted-foreground" />
+                            <div className="flex items-start gap-2">
+                              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                               <div>
                                 <p className="text-sm font-medium">Location</p>
                                 <p className="text-sm text-muted-foreground">
@@ -162,8 +163,8 @@ const DoctorDashboard = () => {
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4 text-muted-foreground" />
+                            <div className="flex items-start gap-2">
+                              <User className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                               <div>
                                 <p className="text-sm font-medium">Assigned Nurse</p>
                                 <p className="text-sm text-muted-foreground">
@@ -173,7 +174,7 @@ const DoctorDashboard = () => {
                             </div>
                           </div>
                           
-                          <div className="mt-4 flex justify-end gap-2">
+                          <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2">
                             <Button size="sm" variant="outline">
                               View Patient Details
                             </Button>
@@ -190,7 +191,7 @@ const DoctorDashboard = () => {
             </Card>
           </div>
 
-          {/* Doctor Info Sidebar */}
+          {/* Doctor Info Sidebar - Full width on mobile */}
           <div className="space-y-6">
             {/* Doctor Profile */}
             <Card className="shadow-[var(--shadow-elegant)]">
