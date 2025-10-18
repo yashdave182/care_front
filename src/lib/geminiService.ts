@@ -2,7 +2,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize Gemini API client
-const genAI = new GoogleGenerativeAI(import.meta.env.GEMINI_API_KEY || '');
+// Try both VITE_GEMINI_API_KEY (for Vercel) and GEMINI_API_KEY (for local development)
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || '';
+const genAI = new GoogleGenerativeAI(apiKey);
 
 // Function to get AI recommendations for nurse and doctor assignments
 export const getAIAssignmentRecommendations = async (
@@ -17,6 +19,11 @@ export const getAIAssignmentRecommendations = async (
   availableDoctors: any[],
   availableBeds: any[]
 ) => {
+  // Check if API key is available
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is required for AI-powered assignments. Please configure your environment variables.');
+  }
+
   try {
     // Get the generative model
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -80,12 +87,17 @@ export const getAIAssignmentRecommendations = async (
     }
   } catch (error) {
     console.error('Error getting AI recommendations:', error);
-    throw new Error('Failed to get AI recommendations');
+    throw new Error(`Failed to get AI recommendations: ${error.message}`);
   }
 };
 
 // Function to analyze patient condition and urgency
 export const analyzePatientCondition = async (condition: string, age: string, notes: string) => {
+  // Check if API key is available
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is required for AI-powered patient analysis. Please configure your environment variables.');
+  }
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
@@ -127,7 +139,7 @@ export const analyzePatientCondition = async (condition: string, age: string, no
     }
   } catch (error) {
     console.error('Error analyzing patient condition:', error);
-    throw new Error('Failed to analyze patient condition');
+    throw new Error(`Failed to analyze patient condition: ${error.message}`);
   }
 };
 

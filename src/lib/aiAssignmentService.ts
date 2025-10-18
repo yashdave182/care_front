@@ -24,16 +24,8 @@ export class AIAssignmentService {
     availableDoctors: Doctor[],
     availableBeds: Bed[]
   ): Promise<AssignmentResult> {
-    // Always use the Gemini API directly - no fallback logic
-    const apiKey = import.meta.env.GEMINI_API_KEY;
-    
-    // If no API key is provided, throw an error instead of using fallback
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is required for AI-powered assignments. Please configure your environment variables.');
-    }
-
     try {
-      // Get AI recommendations directly from Gemini API
+      // Get AI recommendations - this will now properly check for API key
       const recommendations = await getAIAssignmentRecommendations(
         patientData,
         availableNurses,
@@ -60,13 +52,6 @@ export class AIAssignmentService {
   }
 
   static async getPatientUrgencyAnalysis(condition: string, age: string, notes: string) {
-    const apiKey = import.meta.env.GEMINI_API_KEY;
-    
-    // If no API key is provided, throw an error instead of using fallback
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is required for AI-powered patient analysis. Please configure your environment variables.');
-    }
-
     try {
       // Integrate with the Gemini API for patient condition analysis
       // This would be implemented similar to getAIAssignmentRecommendations
