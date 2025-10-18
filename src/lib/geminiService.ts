@@ -25,8 +25,8 @@ export const getAIAssignmentRecommendations = async (
   }
 
   try {
-    // Get the generative model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Get the generative model (updated to gemini-2.5-pro)
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
     
     // Create a prompt for the AI
     const prompt = `
@@ -99,7 +99,8 @@ export const analyzePatientCondition = async (condition: string, age: string, no
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Updated to gemini-2.5-pro
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
     
     const prompt = `
       As a medical triage AI, analyze the following patient information and provide:
