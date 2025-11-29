@@ -75,6 +75,7 @@ const generateMockPatients = () => {
     {
       id: "patient-1",
       name: "John Doe",
+      patient_name: "John Doe", // Include both for compatibility
       age: 45,
       condition: "Cardiac Arrest",
       status: "under_care",
@@ -82,8 +83,8 @@ const generateMockPatients = () => {
     },
     {
       id: "patient-2",
-      patient_name: "Jane Smith",
       name: "Jane Smith",
+      patient_name: "Jane Smith", // Include both for compatibility
       age: 32,
       condition: "Severe Trauma",
       status: "under_care",
@@ -91,8 +92,8 @@ const generateMockPatients = () => {
     },
     {
       id: "patient-3",
-      patient_name: "Bob Johnson",
       name: "Bob Johnson",
+      patient_name: "Bob Johnson", // Include both for compatibility
       age: 67,
       condition: "Pneumonia",
       status: "awaiting_cleaning",
@@ -272,7 +273,14 @@ export const dataService = {
       .select("*")
       .order("created_at", { ascending: false });
 
-    return { data: data || [], error };
+    // Transform data to map 'name' to 'patient_name' for frontend compatibility
+    const transformedData =
+      data?.map((patient: any) => ({
+        ...patient,
+        patient_name: patient.name, // Map DB 'name' to frontend 'patient_name'
+      })) || [];
+
+    return { data: transformedData, error };
   },
 
   getPatientById: async (id: string) => {
@@ -287,7 +295,15 @@ export const dataService = {
       .eq("id", id)
       .single();
 
-    return { data, error };
+    // Transform data to map 'name' to 'patient_name' for frontend compatibility
+    const transformedData = data
+      ? {
+          ...data,
+          patient_name: data.name, // Map DB 'name' to frontend 'patient_name'
+        }
+      : null;
+
+    return { data: transformedData, error };
   },
 
   createPatient: async (patient: { patient_name: string }) => {
