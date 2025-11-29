@@ -360,12 +360,6 @@ export const dataService = {
         };
       }
 
-<<<<<<< HEAD
-=======
-      console.log("[SUPABASE] Patient created successfully:", data);
-      return { data, error: null };
-
->>>>>>> 25dec6de2c87e6760ff23199ae3cdaf8b2c07ade
       // Transform response to include patient_name for frontend compatibility
       const transformedData = data
         ? {
