@@ -1,9 +1,9 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface User {
   id: string;
   email: string;
-  role: 'admin' | 'nurse' | 'doctor';
+  role: "admin" | "nurse" | "doctor";
 }
 
 export interface Hospital {
@@ -18,7 +18,7 @@ export interface Bed {
   id: string;
   bed_number: string;
   floor: number;
-  status: 'available' | 'occupied' | 'cleaning' | 'icu';
+  status: "available" | "occupied" | "cleaning" | "icu";
   position: { x: number; y: number; z: number };
   patient?: string;
 }
@@ -28,7 +28,7 @@ export interface Nurse {
   name: string;
   nurse_id: string;
   specialization: string;
-  status: 'available' | 'busy';
+  status: "available" | "busy";
   assignment?: string;
 }
 
@@ -37,7 +37,7 @@ export interface Doctor {
   name: string;
   doctor_id: string;
   specialization: string;
-  status: 'available' | 'busy';
+  status: "available" | "busy";
   assignment?: string;
 }
 
@@ -53,6 +53,29 @@ export interface Emergency {
   created_at: string;
 }
 
+/**
+ * Patient entity used for non-emergency admissions and downstream agent orchestration.
+ * Mirrors emerging agent contract while staying simple for the UI.
+ */
+export interface Patient {
+  id: string;
+  patient_name: string;
+  age?: number;
+  gender?: "male" | "female" | "other" | "unknown";
+  phone?: string;
+  condition?: string; // e.g. "Cardiac Emergency" or "General Checkup"
+  specialty_required?: string;
+  severity?: "low" | "medium" | "high" | "critical";
+  assigned_bed_id?: string | null;
+  assigned_nurse_id?: string | null;
+  assigned_doctor_id?: string | null;
+  status?: string; // e.g. "admitted", "pre_registered", "discharged"
+  admission_time?: string;
+  created_at?: string;
+  notes?: string;
+  reasoning?: string; // optional AI reasoning for assignments
+}
+
 interface HospitalStore {
   user: User | null;
   hospital: Hospital | null;
@@ -60,13 +83,18 @@ interface HospitalStore {
   nurses: Nurse[];
   doctors: Doctor[];
   emergencies: Emergency[];
+  patients: Patient[];
   setUser: (user: User | null) => void;
   setHospital: (hospital: Hospital | null) => void;
   setBeds: (beds: Bed[]) => void;
   setNurses: (nurses: Nurse[]) => void;
   setDoctors: (doctors: Doctor[]) => void;
   setEmergencies: (emergencies: Emergency[]) => void;
-  updateBedStatus: (bedId: string, status: Bed['status']) => void;
+  setPatients: (patients: Patient[]) => void;
+  addPatient: (patient: Patient) => void;
+  updatePatient: (patientId: string, patch: Partial<Patient>) => void;
+  removePatient: (patientId: string) => void;
+  updateBedStatus: (bedId: string, status: Bed["status"]) => void;
 }
 
 export const useHospitalStore = create<HospitalStore>((set) => ({
@@ -76,16 +104,32 @@ export const useHospitalStore = create<HospitalStore>((set) => ({
   nurses: [],
   doctors: [],
   emergencies: [],
+  patients: [],
   setUser: (user) => set({ user }),
   setHospital: (hospital) => set({ hospital }),
   setBeds: (beds) => set({ beds }),
   setNurses: (nurses) => set({ nurses }),
   setDoctors: (doctors) => set({ doctors }),
   setEmergencies: (emergencies) => set({ emergencies }),
+  setPatients: (patients) => set({ patients }),
+  addPatient: (patient) =>
+    set((state) => ({
+      patients: [patient, ...state.patients],
+    })),
+  updatePatient: (patientId, patch) =>
+    set((state) => ({
+      patients: state.patients.map((p) =>
+        p.id === patientId ? { ...p, ...patch } : p,
+      ),
+    })),
+  removePatient: (patientId) =>
+    set((state) => ({
+      patients: state.patients.filter((p) => p.id !== patientId),
+    })),
   updateBedStatus: (bedId, status) =>
     set((state) => ({
       beds: state.beds.map((bed) =>
-        bed.id === bedId ? { ...bed, status } : bed
+        bed.id === bedId ? { ...bed, status } : bed,
       ),
     })),
 }));

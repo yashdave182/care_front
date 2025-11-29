@@ -1,19 +1,33 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Building2, Eye, EyeOff, Loader2, User, Stethoscope, Shield } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { useHospitalStore } from '@/store/hospitalStore';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Building2,
+  Eye,
+  EyeOff,
+  Loader2,
+  User,
+  Stethoscope,
+  Shield,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { toast } from "sonner";
+import { useHospitalStore } from "@/store/hospitalStore";
 
 const Login = () => {
-  const [email, setEmail] = useState('admin@hospital.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState("admin@hospital.com");
+  const [password, setPassword] = useState("admin123");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userType, setUserType] = useState('admin'); // admin, nurse, doctor
+  const [userType, setUserType] = useState("admin"); // admin, nurse, doctor
   const navigate = useNavigate();
   const { setUser, setHospital } = useHospitalStore();
 
@@ -27,48 +41,48 @@ const Login = () => {
 
       // Mock response based on user type
       let mockUser;
-      let redirectPath = '/';
+      let redirectPath = "/";
 
-      if (userType === 'admin') {
+      if (userType === "admin") {
         mockUser = {
-          id: '1',
+          id: "1",
           email: email,
-          role: 'admin',
+          role: "admin",
         };
-        redirectPath = '/dashboard';
-      } else if (userType === 'nurse') {
+        redirectPath = "/admin";
+      } else if (userType === "nurse") {
         mockUser = {
-          id: '2',
+          id: "2",
           email: email,
-          role: 'nurse',
+          role: "nurse",
         };
-        redirectPath = '/nurse-dashboard';
-      } else if (userType === 'doctor') {
+        redirectPath = "/nurse-dashboard";
+      } else if (userType === "doctor") {
         mockUser = {
-          id: '3',
+          id: "3",
           email: email,
-          role: 'doctor',
+          role: "doctor",
         };
-        redirectPath = '/doctor-dashboard';
+        redirectPath = "/doctor-dashboard";
       }
 
       const mockHospital = {
-        id: '1',
-        name: 'City General Hospital',
-        location: 'Mumbai',
+        id: "1",
+        name: "City General Hospital",
+        location: "Mumbai",
         floors: 3,
         setup_complete: true, // Change to true after setup
       };
 
-      localStorage.setItem('token', 'mock-jwt-token');
+      localStorage.setItem("token", "mock-jwt-token");
       setUser(mockUser);
       setHospital(mockHospital);
 
-      toast.success('Login successful!');
+      toast.success("Login successful!");
 
       navigate(redirectPath);
     } catch (error) {
-      toast.error('Login failed. Please try again.');
+      toast.error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -77,14 +91,14 @@ const Login = () => {
   // Demo credentials based on user type
   const getDemoCredentials = () => {
     switch (userType) {
-      case 'admin':
-        return { email: 'admin@hospital.com', password: 'admin123' };
-      case 'nurse':
-        return { email: 'n001@hospital.com', password: 'nurse123' };
-      case 'doctor':
-        return { email: 'd001@hospital.com', password: 'doctor123' };
+      case "admin":
+        return { email: "admin@hospital.com", password: "admin123" };
+      case "nurse":
+        return { email: "n001@hospital.com", password: "nurse123" };
+      case "doctor":
+        return { email: "d001@hospital.com", password: "doctor123" };
       default:
-        return { email: 'admin@hospital.com', password: 'admin123' };
+        return { email: "admin@hospital.com", password: "admin123" };
     }
   };
 
@@ -108,25 +122,25 @@ const Login = () => {
           {/* User Type Selection - Responsive for mobile */}
           <div className="flex flex-col sm:flex-row gap-2 mb-6">
             <Button
-              variant={userType === 'admin' ? 'default' : 'outline'}
-              className={`w-full sm:flex-1 ${userType === 'admin' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
-              onClick={() => setUserType('admin')}
+              variant={userType === "admin" ? "default" : "outline"}
+              className={`w-full sm:flex-1 ${userType === "admin" ? "bg-gradient-to-r from-primary to-accent" : ""}`}
+              onClick={() => setUserType("admin")}
             >
               <Shield className="w-4 h-4 mr-2" />
               <span className="truncate">Admin</span>
             </Button>
             <Button
-              variant={userType === 'nurse' ? 'default' : 'outline'}
-              className={`w-full sm:flex-1 ${userType === 'nurse' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
-              onClick={() => setUserType('nurse')}
+              variant={userType === "nurse" ? "default" : "outline"}
+              className={`w-full sm:flex-1 ${userType === "nurse" ? "bg-gradient-to-r from-primary to-accent" : ""}`}
+              onClick={() => setUserType("nurse")}
             >
               <User className="w-4 h-4 mr-2" />
               <span className="truncate">Nurse</span>
             </Button>
             <Button
-              variant={userType === 'doctor' ? 'default' : 'outline'}
-              className={`w-full sm:flex-1 ${userType === 'doctor' ? 'bg-gradient-to-r from-primary to-accent' : ''}`}
-              onClick={() => setUserType('doctor')}
+              variant={userType === "doctor" ? "default" : "outline"}
+              className={`w-full sm:flex-1 ${userType === "doctor" ? "bg-gradient-to-r from-primary to-accent" : ""}`}
+              onClick={() => setUserType("doctor")}
             >
               <Stethoscope className="w-4 h-4 mr-2" />
               <span className="truncate">Doctor</span>
@@ -151,7 +165,7 @@ const Login = () => {
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -165,15 +179,23 @@ const Login = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
             <div className="p-4 bg-secondary rounded-lg border border-border">
               <p className="text-sm font-medium mb-2">Demo Credentials:</p>
-              <p className="text-sm text-muted-foreground break-words">Email: {demoCredentials.email}</p>
-              <p className="text-sm text-muted-foreground">Password: {demoCredentials.password}</p>
+              <p className="text-sm text-muted-foreground break-words">
+                Email: {demoCredentials.email}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Password: {demoCredentials.password}
+              </p>
             </div>
 
             <Button
@@ -187,7 +209,7 @@ const Login = () => {
                   Logging in...
                 </>
               ) : (
-                'Login'
+                "Login"
               )}
             </Button>
           </form>
