@@ -8,6 +8,19 @@ const supabaseClient = supabase as any;
 // Check if we should use mock data
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === "true";
 
+// Log data mode on initialization
+console.log(
+  `[DATA SERVICE] Mode: ${useMockData ? "MOCK" : "REAL"} | VITE_USE_MOCK_DATA=${import.meta.env.VITE_USE_MOCK_DATA}`,
+);
+if (useMockData) {
+  console.log("[DATA SERVICE] Using mock data - no Supabase connection needed");
+} else {
+  console.log(
+    "[DATA SERVICE] Using real Supabase data",
+    import.meta.env.VITE_SUPABASE_URL ? "✓" : "✗ URL missing",
+  );
+}
+
 // Mock Data Generators
 const generateMockBeds = (count: number = 50) => {
   return Array.from({ length: count }, (_, i) => {
@@ -317,7 +330,7 @@ export const dataService = {
       console.log("[SUPABASE] URL:", supabaseUrl);
 
       // Only send fields that exist in Supabase patients table
-      // Based on the schema: patient_name (required), emergency_type (required), status, created_at
+      // Based on the actual schema: id, patient_name, status (that's it!)
       const patientData = {
         patient_name: patient.patient_name,
         emergency_type: "General", // Required field - default to "General"
