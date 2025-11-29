@@ -61,7 +61,8 @@ const generateMockPatients = () => {
   return [
     {
       id: "patient-1",
-      patient_name: "John Doe",
+      name: "John Doe",
+      patient_name: "John Doe", // Include both for compatibility
       age: 45,
       condition: "Cardiac Arrest",
       status: "under_care",
@@ -69,7 +70,8 @@ const generateMockPatients = () => {
     },
     {
       id: "patient-2",
-      patient_name: "Jane Smith",
+      name: "Jane Smith",
+      patient_name: "Jane Smith", // Include both for compatibility
       age: 32,
       condition: "Severe Trauma",
       status: "under_care",
@@ -77,7 +79,8 @@ const generateMockPatients = () => {
     },
     {
       id: "patient-3",
-      patient_name: "Bob Johnson",
+      name: "Bob Johnson",
+      patient_name: "Bob Johnson", // Include both for compatibility
       age: 67,
       condition: "Pneumonia",
       status: "awaiting_cleaning",
@@ -181,7 +184,6 @@ export const dataService = {
 
   updateBedStatus: async (id: string, status: string) => {
     if (useMockData) {
-      console.log(`[MOCK] Updating bed ${id} status to ${status}`);
       return { data: { id, status }, error: null };
     }
 
@@ -232,7 +234,6 @@ export const dataService = {
 
   updateStaffAvailability: async (id: string, available: boolean) => {
     if (useMockData) {
-      console.log(`[MOCK] Updating staff ${id} availability to ${available}`);
       return { data: { id, available }, error: null };
     }
 
@@ -257,7 +258,14 @@ export const dataService = {
       .select("*")
       .order("created_at", { ascending: false });
 
-    return { data: data || [], error };
+    // Transform data to map 'name' to 'patient_name' for frontend compatibility
+    const transformedData =
+      data?.map((patient: { name: string; [key: string]: unknown }) => ({
+        ...patient,
+        patient_name: patient.name, // Map DB 'name' to frontend 'patient_name'
+      })) || [];
+
+    return { data: transformedData, error };
   },
 
   getPatientById: async (id: string) => {
@@ -272,16 +280,24 @@ export const dataService = {
       .eq("id", id)
       .single();
 
-    return { data, error };
+    // Transform data to map 'name' to 'patient_name' for frontend compatibility
+    const transformedData = data
+      ? {
+          ...data,
+          patient_name: data.name, // Map DB 'name' to frontend 'patient_name'
+        }
+      : null;
+
+    return { data: transformedData, error };
   },
 
   createPatient: async (patient: { patient_name: string }) => {
     if (useMockData) {
-      console.log("[MOCK] Creating patient:", patient);
       return {
         data: {
           id: `patient-${Date.now()}`,
           ...patient,
+          name: patient.patient_name,
           status: "pending_bed",
           created_at: new Date().toISOString(),
         },
@@ -290,19 +306,11 @@ export const dataService = {
     }
 
     try {
-      console.log("[SUPABASE] Creating patient:", patient);
-
       // Check if Supabase is configured
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       if (!supabaseUrl || !supabaseKey) {
-        console.error("[SUPABASE] Configuration missing!");
-        console.error("VITE_SUPABASE_URL:", supabaseUrl ? "Set" : "MISSING");
-        console.error(
-          "VITE_SUPABASE_ANON_KEY:",
-          supabaseKey ? "Set" : "MISSING",
-        );
         return {
           data: null,
           error: {
@@ -313,19 +321,12 @@ export const dataService = {
         };
       }
 
-      console.log("[SUPABASE] Configuration OK");
-      console.log("[SUPABASE] URL:", supabaseUrl);
-
       // Only send fields that exist in Supabase patients table
-      // Based on the schema: patient_name (required), emergency_type (required), status, created_at
+      // Based on the actual schema: id, name, status
       const patientData = {
-        patient_name: patient.patient_name,
-        emergency_type: "General", // Required field - default to "General"
+        name: patient.patient_name,
         status: "pending_bed",
       };
-
-      console.log("[SUPABASE] Sending data:", patientData);
-      console.log("[SUPABASE] Starting insert operation...");
 
       const { data, error } = await supabaseClient
         .from("patients")
@@ -334,11 +335,7 @@ export const dataService = {
         .single();
 
       if (error) {
-        console.error("[SUPABASE] Error creating patient:", error);
-        console.error("[SUPABASE] Error code:", error.code);
-        console.error("[SUPABASE] Error message:", error.message);
-        console.error("[SUPABASE] Error details:", error.details);
-        console.error("[SUPABASE] Error hint:", error.hint);
+        console.error("Error creating patient:", error.message);
         return {
           data: null,
           error: {
@@ -350,10 +347,17 @@ export const dataService = {
         };
       }
 
-      console.log("[SUPABASE] Patient created successfully:", data);
-      return { data, error: null };
+      // Transform response to include patient_name for frontend compatibility
+      const transformedData = data
+        ? {
+            ...data,
+            patient_name: data.name, // Map DB 'name' to frontend 'patient_name'
+          }
+        : null;
+
+      return { data: transformedData, error: null };
     } catch (err) {
-      console.error("[SUPABASE] Exception while creating patient:", err);
+      console.error("Exception while creating patient:", err);
       return {
         data: null,
         error: {
@@ -367,7 +371,6 @@ export const dataService = {
 
   updatePatientStatus: async (id: string, status: string) => {
     if (useMockData) {
-      console.log(`[MOCK] Updating patient ${id} status to ${status}`);
       return { data: { id, status }, error: null };
     }
 
@@ -434,7 +437,6 @@ export const dataService = {
 
   createTask: async (task: Record<string, unknown>) => {
     if (useMockData) {
-      console.log("[MOCK] Creating task:", task);
       return {
         data: {
           id: `task-${Date.now()}`,
@@ -456,7 +458,6 @@ export const dataService = {
 
   updateTaskStatus: async (id: string, status: string) => {
     if (useMockData) {
-      console.log(`[MOCK] Updating task ${id} status to ${status}`);
       return { data: { id, status }, error: null };
     }
 
@@ -489,7 +490,6 @@ export const dataService = {
     bed_id: string;
   }) => {
     if (useMockData) {
-      console.log("[MOCK] Creating admission:", admission);
       return {
         data: {
           id: `admission-${Date.now()}`,
@@ -539,7 +539,6 @@ export const dataService = {
 
   createEvent: async (event: { type: string; payload: unknown }) => {
     if (useMockData) {
-      console.log("[MOCK] Creating event:", event);
       return {
         data: {
           id: `event-${Date.now()}`,
@@ -563,7 +562,6 @@ export const dataService = {
   // Realtime subscriptions (only works with real data)
   subscribeToTable: (table: string, callback: (payload: unknown) => void) => {
     if (useMockData) {
-      console.log(`[MOCK] Subscription to ${table} (not active in mock mode)`);
       return { unsubscribe: () => {} };
     }
 

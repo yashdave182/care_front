@@ -2,8 +2,24 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-key";
+
+// Check if we're using mock data mode
+const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === "true";
+
+// Warn if Supabase credentials are missing and not in mock mode
+if (
+  !USE_MOCK_DATA &&
+  (!import.meta.env.VITE_SUPABASE_URL ||
+    !import.meta.env.VITE_SUPABASE_ANON_KEY)
+) {
+  console.warn(
+    "[SUPABASE] Missing credentials. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to environment variables, or set VITE_USE_MOCK_DATA=true",
+  );
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +29,7 @@ export const supabase = createClient<Database>(
   SUPABASE_PUBLISHABLE_KEY,
   {
     auth: {
-      storage: localStorage,
+      storage: typeof window !== "undefined" ? localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
     },

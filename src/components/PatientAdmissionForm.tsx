@@ -53,8 +53,6 @@ const PatientAdmissionForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("[FORM] Submit started");
-
     // Validation
     if (!formData.patient_name.trim()) {
       toast.error("Patient name is required");
@@ -66,13 +64,9 @@ const PatientAdmissionForm = ({
       patient_name: formData.patient_name.trim(),
     };
 
-    console.log("[FORM] Submitting patient data:", patientData);
-
     try {
       // Submit to Supabase
       const result = await createPatient(patientData);
-
-      console.log("[FORM] Result received:", result);
 
       if (result.success) {
         toast.success("Patient admitted successfully!", {
@@ -92,7 +86,6 @@ const PatientAdmissionForm = ({
         });
       }
     } catch (err) {
-      console.error("[FORM] Exception during submit:", err);
       toast.error("An error occurred", {
         description: "Please check the console and try again.",
       });

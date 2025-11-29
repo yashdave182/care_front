@@ -4,276 +4,277 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
-      patients: {
+      admissions: {
         Row: {
-          admission_time: string | null
-          age: number | null
-          assigned_bed_id: string | null
-          assigned_doctor_id: string | null
-          assigned_nurse_id: string | null
-          contact_phone: string | null
-          created_at: string | null
-          emergency_type: string
-          gender: string | null
-          id: string
-          medical_notes: string | null
-          patient_name: string
-          severity: string | null
-          status: string | null
-        }
+          id: number;
+          patient_id: number | null;
+          bed_id: number | null;
+          admitted_at: string | null;
+          discharged_at: string | null;
+          status: string | null;
+        };
         Insert: {
-          admission_time?: string | null
-          age?: number | null
-          assigned_bed_id?: string | null
-          assigned_doctor_id?: string | null
-          assigned_nurse_id?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          emergency_type: string
-          gender?: string | null
-          id?: string
-          medical_notes?: string | null
-          patient_name: string
-          severity?: string | null
-          status?: string | null
-        }
+          patient_id?: number | null;
+          bed_id?: number | null;
+          admitted_at?: string | null;
+          discharged_at?: string | null;
+          status?: string | null;
+        };
         Update: {
-          admission_time?: string | null
-          age?: number | null
-          assigned_bed_id?: string | null
-          assigned_doctor_id?: string | null
-          assigned_nurse_id?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          emergency_type?: string
-          gender?: string | null
-          id?: string
-          medical_notes?: string | null
-          patient_name?: string
-          severity?: string | null
-          status?: string | null
-        }
+          patient_id?: number | null;
+          bed_id?: number | null;
+          admitted_at?: string | null;
+          discharged_at?: string | null;
+          status?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "patients_assigned_doctor_id_fkey"
-            columns: ["assigned_doctor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "admissions_patient_id_fkey";
+            columns: ["patient_id"];
+            isOneToOne: false;
+            referencedRelation: "patients";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "patients_assigned_nurse_id_fkey"
-            columns: ["assigned_nurse_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "admissions_bed_id_fkey";
+            columns: ["bed_id"];
+            isOneToOne: false;
+            referencedRelation: "beds";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-      profiles: {
+        ];
+      };
+      beds: {
         Row: {
-          created_at: string | null
-          full_name: string
-          id: string
-          phone: string | null
-          specialization: string | null
-          staff_id: string | null
-          updated_at: string | null
-          user_id: string
-        }
+          id: number;
+          status: string | null;
+          created_at: string | null;
+        };
         Insert: {
-          created_at?: string | null
-          full_name: string
-          id?: string
-          phone?: string | null
-          specialization?: string | null
-          staff_id?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
+          status?: string | null;
+          created_at?: string | null;
+        };
         Update: {
-          created_at?: string | null
-          full_name?: string
-          id?: string
-          phone?: string | null
-          specialization?: string | null
-          staff_id?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_roles: {
+          status?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [];
+      };
+      events: {
         Row: {
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          id: number;
+          type: string;
+          payload: Json | null;
+          processed: boolean | null;
+          created_at: string | null;
+        };
         Insert: {
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          type: string;
+          payload?: Json | null;
+          processed?: boolean | null;
+          created_at?: string | null;
+        };
         Update: {
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          type?: string;
+          payload?: Json | null;
+          processed?: boolean | null;
+          created_at?: string | null;
+        };
+        Relationships: [];
+      };
+      patients: {
+        Row: {
+          id: number;
+          name: string;
+          status: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          name: string;
+          status?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          name?: string;
+          status?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [];
+      };
+      staff: {
+        Row: {
+          id: number;
+          name: string;
+          role: string;
+        };
+        Insert: {
+          name: string;
+          role: string;
+        };
+        Update: {
+          name?: string;
+          role?: string;
+        };
+        Relationships: [];
+      };
+      tasks: {
+        Row: {
+          id: number;
+          type: string;
+          target_role: string | null;
+          agent_role: string | null;
+          assigned_to: number | null;
+          patient_id: number | null;
+          bed_id: number | null;
+          status: string | null;
+          scheduled_at: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          type: string;
+          target_role?: string | null;
+          agent_role?: string | null;
+          assigned_to?: number | null;
+          patient_id?: number | null;
+          bed_id?: number | null;
+          status?: string | null;
+          scheduled_at?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          type?: string;
+          target_role?: string | null;
+          agent_role?: string | null;
+          assigned_to?: number | null;
+          patient_id?: number | null;
+          bed_id?: number | null;
+          status?: string | null;
+          scheduled_at?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_patient_id_fkey";
+            columns: ["patient_id"];
+            isOneToOne: false;
+            referencedRelation: "patients";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tasks_bed_id_fkey";
+            columns: ["bed_id"];
+            isOneToOne: false;
+            referencedRelation: "beds";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      app_role: "admin" | "nurse" | "doctor"
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type PublicSchema = Database[keyof Database];
 
 export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {
-      app_role: ["admin", "nurse", "doctor"],
-    },
-  },
-} as const
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never;

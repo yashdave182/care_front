@@ -59,7 +59,8 @@ export interface Emergency {
  */
 export interface Patient {
   id: string;
-  patient_name: string;
+  name?: string; // Actual DB field
+  patient_name?: string; // For compatibility with frontend
   age?: number;
   gender?: "male" | "female" | "other" | "unknown";
   phone?: string;

@@ -39,8 +39,6 @@ import {
 } from "lucide-react";
 import PatientAdmissionForm from "@/components/PatientAdmissionForm";
 import { usePatients } from "@/hooks/useData";
-import SupabaseStatus from "@/components/SupabaseStatus";
-import DataModeToggle from "@/components/DataModeToggle";
 import { Patient } from "@/store/hospitalStore";
 
 interface AgentStatus {
@@ -240,12 +238,6 @@ const AdminDashboard = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* Connection Status & Data Mode */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <SupabaseStatus />
-          <DataModeToggle />
-        </div>
-
         {/* Quick Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
@@ -728,7 +720,7 @@ const AdminDashboard = () => {
                           ).map((patient: Patient) => (
                             <TableRow key={patient.id}>
                               <TableCell className="font-medium">
-                                {patient.patient_name}
+                                {patient.name || patient.patient_name}
                               </TableCell>
                               <TableCell>
                                 <Badge variant="outline">
