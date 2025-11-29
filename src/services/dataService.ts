@@ -74,7 +74,7 @@ const generateMockPatients = () => {
   return [
     {
       id: "patient-1",
-      patient_name: "John Doe",
+      name: "John Doe",
       age: 45,
       condition: "Cardiac Arrest",
       status: "under_care",
@@ -83,6 +83,7 @@ const generateMockPatients = () => {
     {
       id: "patient-2",
       patient_name: "Jane Smith",
+      name: "Jane Smith",
       age: 32,
       condition: "Severe Trauma",
       status: "under_care",
@@ -91,6 +92,7 @@ const generateMockPatients = () => {
     {
       id: "patient-3",
       patient_name: "Bob Johnson",
+      name: "Bob Johnson",
       age: 67,
       condition: "Pneumonia",
       status: "awaiting_cleaning",
