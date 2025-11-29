@@ -1,22 +1,42 @@
-// Data Service Layer - Supports both Mock and Real Supabase Data
+// Data Service Layer - Supports Mock, Supabase, and Railway Backend Data
 import { supabase } from "@/integrations/supabase/client";
+import { railwayApiService } from "./railwayApi";
 
 // Use untyped client to bypass schema restrictions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const supabaseClient = supabase as any;
 
-// Check if we should use mock data
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === "true";
+// Determine data mode: MOCK, RAILWAY, or SUPABASE
+const getDataMode = () => {
+  if (import.meta.env.VITE_USE_MOCK_DATA === "true") {
+    return "MOCK";
+  }
+  if (
+    import.meta.env.VITE_USE_RAILWAY_BACKEND === "true" ||
+    import.meta.env.VITE_RAILWAY_API_URL
+  ) {
+    return "RAILWAY";
+  }
+  return "SUPABASE";
+};
+
+const dataMode = getDataMode();
+const useMockData = dataMode === "MOCK";
+const useRailwayBackend = dataMode === "RAILWAY";
 
 // Log data mode on initialization
-console.log(
-  `[DATA SERVICE] Mode: ${useMockData ? "MOCK" : "REAL"} | VITE_USE_MOCK_DATA=${import.meta.env.VITE_USE_MOCK_DATA}`,
-);
-if (useMockData) {
-  console.log("[DATA SERVICE] Using mock data - no Supabase connection needed");
+console.log(`[DATA SERVICE] Mode: ${dataMode}`);
+if (dataMode === "MOCK") {
+  console.log("[DATA SERVICE] Using mock data - no backend connection needed");
+} else if (dataMode === "RAILWAY") {
+  console.log(
+    "[DATA SERVICE] Using Railway backend:",
+    import.meta.env.VITE_RAILWAY_API_URL ||
+      "https://careflownexus-production.up.railway.app",
+  );
 } else {
   console.log(
-    "[DATA SERVICE] Using real Supabase data",
+    "[DATA SERVICE] Using Supabase backend",
     import.meta.env.VITE_SUPABASE_URL ? "✓" : "✗ URL missing",
   );
 }
@@ -155,7 +175,7 @@ const generateMockAdmissions = () => {
 // Data Service Functions
 export const dataService = {
   // Get data source mode
-  getDataMode: () => (useMockData ? "mock" : "real"),
+  getDataMode: () => dataMode.toLowerCase(),
 
   // Toggle data mode (for runtime switching)
   toggleDataMode: () => {
@@ -170,6 +190,16 @@ export const dataService = {
   getBeds: async () => {
     if (useMockData) {
       return { data: generateMockBeds(), error: null };
+    }
+
+    if (useRailwayBackend) {
+      try {
+        const beds = await railwayApiService.beds.list();
+        return { data: beds, error: null };
+      } catch (error) {
+        console.error("[DATA SERVICE] Railway getBeds error:", error);
+        return { data: [], error };
+      }
     }
 
     const { data, error } = await supabaseClient
@@ -266,6 +296,21 @@ export const dataService = {
       return { data: generateMockPatients(), error: null };
     }
 
+    if (useRailwayBackend) {
+      try {
+        const patients = await railwayApiService.patients.list();
+        // Transform data to map 'name' to 'patient_name' for frontend compatibility
+        const transformedData = patients.map((patient) => ({
+          ...patient,
+          patient_name: patient.name,
+        }));
+        return { data: transformedData, error: null };
+      } catch (error) {
+        console.error("[DATA SERVICE] Railway getPatients error:", error);
+        return { data: [], error };
+      }
+    }
+
     const { data, error } = await supabaseClient
       .from("patients")
       .select("*")
@@ -316,6 +361,46 @@ export const dataService = {
         },
         error: null,
       };
+    }
+
+    if (useRailwayBackend) {
+      try {
+        const createdPatient = await railwayApiService.patients.create(
+          patient.patient_name,
+        );
+        // Transform response to include patient_name for frontend compatibility
+        const transformedData = {
+          ...createdPatient,
+          patient_name: createdPatient.name,
+        };
+
+        // Automatically trigger admission workflow
+        if (createdPatient.id) {
+          try {
+            await railwayApiService.admissions.admit(createdPatient.id);
+            console.log(
+              `[DATA SERVICE] Patient ${createdPatient.id} admitted successfully`,
+            );
+          } catch (admitError) {
+            console.error("[DATA SERVICE] Auto-admission failed:", admitError);
+            // Don't fail the patient creation if admission fails
+          }
+        }
+
+        return { data: transformedData, error: null };
+      } catch (error) {
+        console.error("[DATA SERVICE] Railway createPatient error:", error);
+        return {
+          data: null,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : "Failed to create patient via Railway backend",
+            details: error,
+          },
+        };
+      }
     }
 
     try {
@@ -412,6 +497,28 @@ export const dataService = {
         tasks = tasks.filter((t) => t.assigned_to === filters.assigned_to);
       }
       return { data: tasks, error: null };
+    }
+
+    if (useRailwayBackend) {
+      try {
+        let tasks = await railwayApiService.tasks.list();
+
+        // Apply filters client-side
+        if (filters?.status) {
+          tasks = tasks.filter((t) => t.status === filters.status);
+        }
+        if (filters?.assigned_to) {
+          tasks = tasks.filter((t) => t.assigned_to === filters.assigned_to);
+        }
+        if (filters?.role) {
+          tasks = tasks.filter((t) => t.agent_role === filters.role);
+        }
+
+        return { data: tasks, error: null };
+      } catch (error) {
+        console.error("[DATA SERVICE] Railway getTasks error:", error);
+        return { data: [], error };
+      }
     }
 
     let query = supabaseClient.from("tasks").select("*");
