@@ -330,10 +330,9 @@ export const dataService = {
       console.log("[SUPABASE] URL:", supabaseUrl);
 
       // Only send fields that exist in Supabase patients table
-      // Based on the actual schema: id, patient_name, status (that's it!)
+      // Based on the actual schema: id, name, status
       const patientData = {
-        patient_name: patient.patient_name,
-        emergency_type: "General", // Required field - default to "General"
+        name: patient.patient_name,
         status: "pending_bed",
       };
 
