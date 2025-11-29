@@ -8,6 +8,19 @@ const supabaseClient = supabase as any;
 // Check if we should use mock data
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === "true";
 
+// Log data mode on initialization
+console.log(
+  `[DATA SERVICE] Mode: ${useMockData ? "MOCK" : "REAL"} | VITE_USE_MOCK_DATA=${import.meta.env.VITE_USE_MOCK_DATA}`,
+);
+if (useMockData) {
+  console.log("[DATA SERVICE] Using mock data - no Supabase connection needed");
+} else {
+  console.log(
+    "[DATA SERVICE] Using real Supabase data",
+    import.meta.env.VITE_SUPABASE_URL ? "✓" : "✗ URL missing",
+  );
+}
+
 // Mock Data Generators
 const generateMockBeds = (count: number = 50) => {
   return Array.from({ length: count }, (_, i) => {
@@ -347,6 +360,12 @@ export const dataService = {
         };
       }
 
+<<<<<<< HEAD
+=======
+      console.log("[SUPABASE] Patient created successfully:", data);
+      return { data, error: null };
+
+>>>>>>> 25dec6de2c87e6760ff23199ae3cdaf8b2c07ade
       // Transform response to include patient_name for frontend compatibility
       const transformedData = data
         ? {
