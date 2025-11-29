@@ -275,7 +275,7 @@ export const dataService = {
 
     // Transform data to map 'name' to 'patient_name' for frontend compatibility
     const transformedData =
-      data?.map((patient: any) => ({
+      data?.map((patient: { name: string; [key: string]: unknown }) => ({
         ...patient,
         patient_name: patient.name, // Map DB 'name' to frontend 'patient_name'
       })) || [];
@@ -313,6 +313,7 @@ export const dataService = {
         data: {
           id: `patient-${Date.now()}`,
           ...patient,
+          name: patient.patient_name,
           status: "pending_bed",
           created_at: new Date().toISOString(),
         },
@@ -382,6 +383,16 @@ export const dataService = {
 
       console.log("[SUPABASE] Patient created successfully:", data);
       return { data, error: null };
+
+      // Transform response to include patient_name for frontend compatibility
+      const transformedData = data
+        ? {
+            ...data,
+            patient_name: data.name, // Map DB 'name' to frontend 'patient_name'
+          }
+        : null;
+
+      return { data: transformedData, error: null };
     } catch (err) {
       console.error("[SUPABASE] Exception while creating patient:", err);
       return {
